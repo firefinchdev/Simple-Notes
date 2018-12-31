@@ -12,8 +12,9 @@ import android.widget.EditText;
 import android.widget.NumberPicker;
 import android.widget.Toast;
 
-public class AddNoteActivity extends AppCompatActivity {
+public class AddEditNoteActivity extends AppCompatActivity {
 
+    public static final String EXTRA_ID = BuildConfig.APPLICATION_ID.concat("EXTRA_ID");
     public static final String EXTRA_TITLE = BuildConfig.APPLICATION_ID.concat("EXTRA_TITLE");
     public static final String EXTRA_DESC = BuildConfig.APPLICATION_ID.concat("EXTRA_DESC");
     public static final String EXTRA_PRIORITY = BuildConfig.APPLICATION_ID.concat("EXTRA_PRIORITY");
@@ -29,6 +30,13 @@ public class AddNoteActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
         initialize();
+
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_ID)) {
+            setTitle("Edit Note");
+        } else {
+            setTitle("Edit Note");
+        }
 
     }
 
@@ -47,6 +55,11 @@ public class AddNoteActivity extends AppCompatActivity {
         data.putExtra(EXTRA_DESC, desc);
         data.putExtra(EXTRA_PRIORITY, priority);
 
+        int id = getIntent().getIntExtra(EXTRA_ID, -1);
+        if (id != -1) {
+            data.putExtra(EXTRA_ID, id);
+        }
+
         setResult(RESULT_OK, data); //Indicates that activity's work was success
         finish();
 
@@ -58,7 +71,15 @@ public class AddNoteActivity extends AppCompatActivity {
         numberPickerPriority.setMaxValue(10);
 
         actionBar.setHomeAsUpIndicator(R.drawable.ic_close);
-        setTitle(R.string.add_note);
+        Intent intent = getIntent();
+        if (intent.hasExtra(EXTRA_ID)) {
+            setTitle(R.string.edit_note_title);
+            etTitle.setText(intent.getStringExtra(EXTRA_TITLE));
+            etDesc.setText(intent.getStringExtra(EXTRA_DESC));
+            numberPickerPriority.setValue(intent.getIntExtra(EXTRA_PRIORITY, 1));
+        } else {
+            setTitle(R.string.add_note_title);
+        }
     }
 
     private void acquireIds() {
